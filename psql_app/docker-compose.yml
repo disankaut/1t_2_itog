@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:13
+    container_name: psql_container
+    environment:
+      POSTGRES_USER: sysadmin
+      POSTGRES_PASSWORD: 12345678
+      POSTGRES_DB: db_name
+    ports:
+      - "5432:5432"  # Пробрасываем порт PostgreSQL
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  python-app:
+    build:
+      context: .
+    container_name: python-app
+    depends_on:
+      - postgres
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: db_name
+      DB_USER: sysadmin
+      DB_PASSWORD: 12345678
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+
+volumes:
+  postgres_data:
+    driver: local
